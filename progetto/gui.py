@@ -1,53 +1,41 @@
 import tkinter as tk
+from tkinter import ttk
 
-class crontabGUI(tk.Tk):
+class CrontabGUI(tk.Tk):
 
     def __init__(self):
         super().__init__()
         self.title("Crontab")
         self.geometry("600x600")
 
+        self.listbox_frame = ttk.Frame(self)
+        self.listbox_frame.pack(padx=10, pady=10)
 
-        
-        self.list = [] # inizializzo una lista vuota in cui inserirò le righe
-        self.time = []
-        self.day = []
         self.readFile()
-
-
-        self.text = tk.Text(self)
-        
-        # Creazione della Listbox per mostrare gli elementi della lista
-        self.listbox = tk.Listbox(self, width=100, height=30)
-        self.listbox.pack(padx=10, pady=10)
-        
-        # Popolamento della Listbox con gli elementi della lista
         self.populate_listbox()
 
-        
-        
-
-    def cleanOutput(self, line): #visto che l'output del crontab visualizzato in tkinter non compare correttamente, faccio una pulizia
-        """Sostituisce i tab con quattro spazi e rimuove i caratteri di campanella."""
-        cleaned = line.replace('\t', ' ' * 4)  # Sostituisce i tab con quattro spazi
-        cleaned = cleaned.replace('\a', '')  # Rimuove eventuali caratteri di campanella
-        return cleaned.strip()  # Rimuove spazi bianchi all'inizio e alla fine
-
     def readFile(self):
+        self.minutes = []
+        self.hours = []
+        self.users = []
+        self.commands = []
+
         with open("/etc/crontab", "r") as f:
-            file = f.readlines()
-            i = 18
-            while i < len(file):
-                # line = file[i].strip()
-                # if line and not line.startswith('#'):
-                #     cleaned_line = self.cleanOutput(line)
-                #     self.list.append(cleaned_line)
-                i += 1
+            for line in f:
+                if line.strip() and not line.startswith("#"):
+                    parts = line.split()
+                    if len(parts) > 5:
+                        self.minutes.append(parts[0])
+                        self.hours.append(parts[1])
+                        self.users.append(parts[5])
+                        self.commands.append(" ".join(parts[6:]))
 
     def populate_listbox(self):
-        for item in self.list:
-            self.listbox.insert(tk.END, item)
+        for minute, hour, user, command in zip(self.minutes, self.hours, self.users, self.commands):
+            formatted_text = f"Il comando: {command}, l'utente: {user}, l'ora e il minuto: {hour}:{minute}"
+            label = tk.Label(self.listbox_frame, text=formatted_text)
+            label.pack(anchor="w", pady=5)
 
 if __name__ == "__main__":
-    app = crontabGUI()
+    app = CrontabGUI()
     app.mainloop()
