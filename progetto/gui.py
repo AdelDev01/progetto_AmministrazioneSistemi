@@ -21,20 +21,21 @@ class CrontabGUI(tk.Tk):
     def readFile(self):
         with open("/etc/crontab", "r") as f:
             for line in f:
-                if line.strip() and not line.startswith("#"):
+                if line.strip() and not line.startswith("#") and not line.startswith("SHELL"):
                     parts = line.split()
-                    if len(parts) > 5:
-                        lineObj = Lines(
-                            minute=parts[0],
-                            hour=parts[1],
-                            dayofmonth=parts[2],
-                            month=parts[3],
-                            dayofweek=parts[4],
-                            username=parts[5],
-                            command=" ".join(parts[6:])
-                        )
-                        self.lineObjectsList.append(lineObj)
-                    
+                    print("GAY", len(parts))
+                    lineObj = Lines(
+                        minute=parts[0],
+                        hour=parts[1],
+                        dayofmonth=parts[2],
+                        month=parts[3],
+                        dayofweek=parts[4],
+                        username=parts[5],
+                        command=" ".join(parts[6:])
+                    )
+                    self.lineObjectsList.append(lineObj)
+                    print("balotelli", self.lineObjectsList[])
+        # print(self.lineObjectsList)
         return self.lineObjectsList
 
     def populate_listbox(self):
@@ -46,3 +47,4 @@ class CrontabGUI(tk.Tk):
 if __name__ == "__main__":
     app = CrontabGUI()
     app.mainloop()
+    # print(app.lineObjectsList)
