@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
-from lines import *
+from lines import Lines
 
 class CrontabGUI(tk.Tk):
 
@@ -12,39 +12,37 @@ class CrontabGUI(tk.Tk):
         self.listbox_frame = ttk.Frame(self)
         self.listbox_frame.pack(padx=10, pady=10)
 
-        lineObjectsList = []
+        self.lineObjectsList = []
         
-        self.readFile(lineObjectsList)
+        self.readFile()
         self.populate_listbox()
 
         
-    def readFile(self, lineObjectsList):
+    def readFile(self):
         with open("/etc/crontab", "r") as f:
             for line in f:
-                lineObj = Lines()
                 if line.strip() and not line.startswith("#"):
                     parts = line.split()
                     if len(parts) > 5:
-                        lineObj.changeMinute(parts[0])
-                        lineObj.changeHour(parts[1])
-                        lineObj.changeDayOfMonth(parts[2])
-                        lineObj.changeMonth(parts[3])
-                        lineObj.changeDayOfWeek(parts[4])
-                        lineObj.changeUsername(parts[5])
-                        lineObj.changeCommand(" ".join(parts[6:]))
-
-                lineObjectsList.append(lineObj)
+                        lineObj = Lines(
+                            minute=parts[0],
+                            hour=parts[1],
+                            dayofmonth=parts[2],
+                            month=parts[3],
+                            dayofweek=parts[4],
+                            username=parts[5],
+                            command=" ".join(parts[6:])
+                        )
+                        self.lineObjectsList.append(lineObj)
                     
-        print(lineObjectsList)
-
+        return self.lineObjectsList
 
     def populate_listbox(self):
-        for minute, hour, user, command in zip(self.minutes, self.hours, self.users, self.commands):
-            formatted_text = f"Il comando: {command}, l'utente: {user}, l'ora e il minuto: {hour}:{minute}"
+        for line in self.lineObjectsList:
+            formatted_text = f"Il comando: {line.command}, l'utente: {line.username}, l'ora e il minuto: {line.hour}:{line.minute}"
             label = tk.Label(self.listbox_frame, text=formatted_text)
             label.pack(anchor="w", pady=5)
 
 if __name__ == "__main__":
     app = CrontabGUI()
     app.mainloop()
-
