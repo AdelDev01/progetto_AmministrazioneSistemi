@@ -1,0 +1,1 @@
+Attraverso l'utilizzo di crontab, eliminare il contenuto di una cartella appartenente a un utente fittizio studente, ogni X tempo, scelto attraverso interfaccia grafica dall'utente. La GUI serve anche per visualizzare gli script che vengono eseguiti periodicamente da crontab
