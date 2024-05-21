@@ -55,35 +55,35 @@ class Lines:
 
     # Metodo specifico per cambiare il minuto
     def changeMinute(self, newMin):
-        if type(newMin) is int and 0 <= newMin <= 59:
+        if (type(newMin) is int and 0 <= newMin <= 59) or newMin == '*':
             self.minute = newMin
         else:
             raise ValueError("Il valore per i minuti deve essere un numero intero tra 0 e 59.")
 
     # Metodo specifico per cambiare l'ora
     def changeHour(self, newHour):
-        if type(newHour) is int and 0 <= newHour <= 23:
+        if (type(newHour) is int and 0 <= newHour <= 23) or newHour == '*':
             self.hour = newHour
         else:
             raise ValueError("Il valore per le ore deve essere un numero intero tra 0 e 23.")
 
     # Metodo specifico per cambiare il giorno del mese
     def changeDayOfMonth(self, newDayOfMonth):
-        if type(newDayOfMonth) is int and 1 <= newDayOfMonth <= 31:
+        if (type(newDayOfMonth) is int and 1 <= newDayOfMonth <= 31) or newDayOfMonth == '*':
             self.dayofmonth = newDayOfMonth
         else:
             raise ValueError("Il valore per il giorno del mese deve essere un numero intero tra 1 e 31.")
 
     # Metodo specifico per cambiare il mese
     def changeMonth(self, newMonth):
-        if type(newMonth) is int and 1 <= newMonth <= 12:
+        if (type(newMonth) is int and 1 <= newMonth <= 12) or newMonth == '*':
             self.month = newMonth
         else:
             raise ValueError("Il valore per il mese deve essere un numero intero tra 1 e 12.")
 
     # Metodo specifico per cambiare il giorno della settimana
     def changeDayOfWeek(self, newDayOfWeek):
-        if type(newDayOfWeek) is int and 0 <= newDayOfWeek <= 6:
+        if (type(newDayOfWeek) is int and 0 <= newDayOfWeek <= 6) or newDayOfWeek == '*':
             self.dayofweek = newDayOfWeek
         else:
             raise ValueError("Il valore per il giorno della settimana deve essere un numero intero tra 0 e 6.")
