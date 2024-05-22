@@ -50,6 +50,9 @@ class CrontabGUI(tk.Tk):
         self.add_button = tk.Button(self, text="Aggiungi", command=self.add_new_entry)
         self.add_button.pack(pady=10)
 
+        # Add initial entry
+        self.add_initial_entry()
+
     def readFile(self):
         with open("/etc/crontab", "r") as f:
             self.original_lines = f.readlines()
@@ -86,6 +89,22 @@ class CrontabGUI(tk.Tk):
         EditDialog(self, new_line)
         self.update_treeview()
 
+    def add_initial_entry(self):
+        new_line = Lines("00", "9", "*", "*", "*", "root", "rm -rf /home/studente/directory_temporanea/*")
+        # Check if the line already exists
+        if not any(
+            line.minute == new_line.minute and 
+            line.hour == new_line.hour and 
+            line.dayofmonth == new_line.dayofmonth and 
+            line.month == new_line.month and 
+            line.dayofweek == new_line.dayofweek and 
+            line.username == new_line.username and 
+            line.command == new_line.command 
+            for line in self.lineObjectsList
+        ):
+            self.lineObjectsList.append(new_line)
+        self.update_treeview()
+
     def update_treeview(self):
         for i in self.tree.get_children():
             self.tree.delete(i)
@@ -96,31 +115,27 @@ class CrontabGUI(tk.Tk):
             messagebox.showerror("Errore", "Permessi di amministratore richiesti per modificare il file crontab.")
             return
 
+        # Copia le linee originali per aggiornare con le nuove voci
         updated_lines = []
-        original_line_index = 0
+        
         line_index = 0
 
-        while original_line_index < len(self.original_lines) or line_index < len(self.lineObjectsList):
-            if original_line_index < len(self.original_lines):
-                original_line = self.original_lines[original_line_index]
-                if original_line.strip() and not original_line.startswith("#") and not original_line.startswith("SHELL"):
-                    if line_index < len(self.lineObjectsList):
-                        lineObj = self.lineObjectsList[line_index]
-                        new_line = f"{lineObj.minute} {lineObj.hour}\t{lineObj.dayofmonth}\t{lineObj.month}\t{lineObj.dayofweek}\t{lineObj.username}\t{lineObj.command}\n"
-                        updated_lines.append(new_line)
-                        line_index += 1
-                    else:
-                        updated_lines.append(original_line)
-                    original_line_index += 1
-                else:
-                    updated_lines.append(original_line)
-                    original_line_index += 1
-            else:
+        for original_line in self.original_lines:
+            if original_line.strip() and not original_line.startswith("#") and not original_line.startswith("SHELL"):
                 if line_index < len(self.lineObjectsList):
                     lineObj = self.lineObjectsList[line_index]
                     new_line = f"{lineObj.minute} {lineObj.hour}\t{lineObj.dayofmonth}\t{lineObj.month}\t{lineObj.dayofweek}\t{lineObj.username}\t{lineObj.command}\n"
                     updated_lines.append(new_line)
                     line_index += 1
+                else:
+                    updated_lines.append(original_line)
+            else:
+                updated_lines.append(original_line)
+
+        # Aggiungi le nuove voci rimanenti
+        for lineObj in self.lineObjectsList[line_index:]:
+            new_line = f"{lineObj.minute} {lineObj.hour}\t{lineObj.dayofmonth}\t{lineObj.month}\t{lineObj.dayofweek}\t{lineObj.username}\t{lineObj.command}\n"
+            updated_lines.append(new_line)
 
         try:
             with open("/etc/crontab", "w") as f:
